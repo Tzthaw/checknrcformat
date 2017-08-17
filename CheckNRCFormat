@@ -1,0 +1,115 @@
+import android.content.Context;
+import android.widget.Toast;
+
+public class CheckNRCFormat {
+    String checkedNRC = "";
+    Context c;
+
+    public String getCheckedNRC() {
+        return checkedNRC;
+    }
+
+    public void setCheckedNRC(String checkedNRC) {
+        this.checkedNRC = checkedNRC;
+    }
+
+    public CheckNRCFormat(String s, Context c) {
+        this.c = c;
+        String backNumber = "";
+        String nationalString = "";
+        String state = "";
+        String nrcString = "";
+        String NationalCheck = "";
+        String checkNational = "";
+        String nrc = "";
+        nrcString = s;
+        if (nrcString != null) {
+            char[] charArray = nrcString.toCharArray();
+            int total = charArray.length - 1;
+            int j = 0;
+            for (int i = 0; i < total; i++) {
+                if (i < 2) {
+                    if (Character.isDigit(charArray[i])) {
+                        nrc += String.valueOf(charArray[i]);
+                    }
+                }
+
+                if ((i == 0 || i == 1)) {
+                    if (charArray[i] == '/') {
+                        nrc += "/";
+                    } else {
+                        nrc += "";
+                    }
+                }
+                if (i > 0 && !Character.isDigit(charArray[i])) {
+
+                    if (Character.isDigit(charArray[i])) {
+                        if (backNumber == null) {
+                            backNumber = nrcString.substring(i, total + 1);
+                        }
+                    }
+                    if (Character.isLetter(charArray[i])) {
+                        if (checkNational == null) {
+                            checkNational = String.valueOf(charArray[i]);
+                        } else {
+                            checkNational += String.valueOf(charArray[i]);
+                        }
+                    }
+                } else if (i > 3 && Character.isDigit(charArray[i])) {
+                    if (backNumber.equalsIgnoreCase("")) {
+                        backNumber = nrcString.substring(i, total + 1);
+                    }
+                }
+            }
+            NationalCheck = checkNational.toUpperCase();
+            if (NationalCheck.contains("HTAYA") || NationalCheck.contains("(HTAYA)")) {
+                nationalString = "HTAYA";
+                state = NationalCheck.substring(0, NationalCheck.length() - 5);
+            } else if (NationalCheck.contains("THI") || NationalCheck.contains("(THI)")) {
+                nationalString = "THI";
+                state = NationalCheck.substring(0, NationalCheck.length() - 3);
+            } else if (NationalCheck.contains("THA") || NationalCheck.contains("(THA)")) {
+                nationalString = "THA";
+                state = NationalCheck.substring(0, NationalCheck.length() - 3);
+            } else if (NationalCheck.contains("P") || NationalCheck.contains("E") || NationalCheck.contains("N")) {
+                char[] cc = NationalCheck.toCharArray();
+                if (cc[NationalCheck.length() - 1] == 'P') {
+                    nationalString = "P";
+                    state = NationalCheck.substring(0, NationalCheck.length() - 1);
+                } else if (cc[NationalCheck.length() - 1] == 'E') {
+                    nationalString = "E";
+                    state = NationalCheck.substring(0, NationalCheck.length() - 1);
+                } else if (cc[NationalCheck.length() - 1] == 'N') {
+                    nationalString = "N";
+                    state = NationalCheck.substring(0, NationalCheck.length() - 1);
+                }
+            } else {
+                Toast.makeText(c, "You Enter Your ID Example:N,P,E,HTATA,THA,THI in your text please", Toast.LENGTH_LONG).show();
+            }
+
+            if ((nrc.length() < 4)) {
+                if (nrc.length() > 0) {
+                    if (!backNumber.equalsIgnoreCase("")) {
+                        if ((backNumber.length() < 7) && (Integer.parseInt(nrc) > 0 && (Integer.parseInt(nrc) < 15))) {
+                            checkedNRC = nrc + "/" + state.toUpperCase() + "(" + nationalString.toUpperCase() + ")" + backNumber;
+                        } else if (backNumber.length() >= 7) {
+                            Toast.makeText(c, "back Number is at most 6", Toast.LENGTH_LONG).show();
+                        } else if (Integer.parseInt(nrc) <= 0 || (Integer.parseInt(nrc) > 14)) {
+                            Toast.makeText(c, "front Number is between 1 and 14", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(c, "back Number is at least 6", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(c, "front Number is at least 1 or 2", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(c, "front Number is at most 2", Toast.LENGTH_LONG).show();
+            }
+
+
+        }
+
+    }
+
+}
